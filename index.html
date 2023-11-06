@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Card Game</title>
+    <style>
+        #game {
+            text-align: center;
+        }
+        #result {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+<div id="game">
+    <h1>Card Game</h1>
+    <button onclick="startGame()">Start Game</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    let players = ["Player 1", "Player 2", "Player 3", "Player 4"];
+    let cards = ["サカ", "バン", "バス", "ピス"];
+    let king = Math.floor(Math.random() * 4) + 1; // Randomly select a king
+
+    function startGame() {
+        document.getElementById("result").innerHTML = "";
+        shuffle(cards);
+        let playerChoices = [];
+        
+        for (let i = 1; i <= 4; i++) {
+            let randomCard = cards.pop();
+            playerChoices.push({ player: players[i - 1], card: randomCard });
+        }
+        
+        revealCards(playerChoices);
+    }
+
+    function revealCards(playerChoices) {
+        let resultText = "Results:<br>";
+
+        for (let i = 1; i <= 4; i++) {
+            let choice = playerChoices.find((p) => p.player === `Player ${i}`);
+            resultText += `<b>Player ${i}:</b> ${choice.card}<br>`;
+        }
+
+        if (playerChoices[0].card === "サカ" && playerChoices[1].card === "バン" && playerChoices[2].card === "バス" && playerChoices[3].card === "ピス") {
+            resultText += "You WIN!!";
+        } else {
+            resultText += "You LOST......";
+        }
+
+        document.getElementById("result").innerHTML = resultText;
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+</script>
+</body>
+</html>
