@@ -9,12 +9,25 @@
         #result {
             font-size: 24px;
         }
+        .card {
+            border: 2px solid black;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div id="game">
     <h1>Card Game</h1>
     <button onclick="startGame()">Start Game</button>
+    <div id="cardSelection">
+        <h2>Select a card:</h2>
+        <div class="card" onclick="chooseCard('サカ')">サカ</div>
+        <div class="card" onclick="chooseCard('バン')">バン</div>
+        <div class="card" onclick="chooseCard('バス')">バス</div>
+        <div class="card" onclick="chooseCard('ピス')">ピス</div>
+    </div>
     <div id="result"></div>
 </div>
 
@@ -22,26 +35,41 @@
     let players = ["Player 1", "Player 2", "Player 3", "Player 4"];
     let cards = ["サカ", "バン", "バス", "ピス"];
     let king = Math.floor(Math.random() * 4) + 1; // Randomly select a king
+    let playerChoices = [];
+    let currentPlayer = 0; // Current player index
 
     function startGame() {
         document.getElementById("result").innerHTML = "";
+        document.getElementById("cardSelection").style.display = "block";
         shuffle(cards);
-        let playerChoices = [];
-        
+        currentPlayer = 0;
+        playerChoices = [];
+
         for (let i = 1; i <= 4; i++) {
-            let randomCard = cards.pop();
-            playerChoices.push({ player: players[i - 1], card: randomCard });
+            playerChoices.push({ player: players[i - 1], card: null });
         }
-        
-        revealCards(playerChoices);
+    }
+
+    function chooseCard(card) {
+        if (playerChoices[currentPlayer].card === null) {
+            playerChoices[currentPlayer].card = card;
+            document.getElementsByClassName("card")[cards.indexOf(card)].style.display = "none";
+
+            if (currentPlayer === 3) {
+                // All players have chosen cards, reveal and check the result
+                document.getElementById("cardSelection").style.display = "none";
+                revealCards(playerChoices);
+            } else {
+                currentPlayer++; // Move to the next player
+            }
+        }
     }
 
     function revealCards(playerChoices) {
         let resultText = "Results:<br>";
 
         for (let i = 1; i <= 4; i++) {
-            let choice = playerChoices.find((p) => p.player === `Player ${i}`);
-            resultText += `<b>Player ${i}:</b> ${choice.card}<br>`;
+            resultText += `<b>${players[i - 1]}:</b> ${playerChoices[i - 1].card}<br>`;
         }
 
         if (playerChoices[0].card === "サカ" && playerChoices[1].card === "バン" && playerChoices[2].card === "バス" && playerChoices[3].card === "ピス") {
