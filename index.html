@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Card Game</title>
+    <title>Card Game with Rooms</title>
     <style>
         #game {
             text-align: center;
@@ -15,77 +15,104 @@
             margin: 5px;
             cursor: pointer;
         }
+        #room {
+            display: none;
+        }
     </style>
 </head>
 <body>
 <div id="game">
     <h1>Card Game</h1>
-    <button onclick="startGame()">Start Game</button>
+    <div id="room">
+        <h2>Your Room ID: <span id="roomID"></span></h2>
+    </div>
+    <button onclick="createRoom()">Create a Room</button>
+    <button onclick="joinRoom()">Join a Room</button>
     <div id="cardSelection">
         <h2>Select a card:</h2>
         <div class="card" onclick="chooseCard('サカ')">サカ</div>
         <div class="card" onclick="chooseCard('バン')">バン</div>
         <div class="card" onclick="chooseCard('バス')">バス</div>
         <div class="card" onclick="chooseCard('ピス')">ピス</div>
+        <button onclick="lockInCard()">決定</button>
     </div>
     <div id="result"></div>
 </div>
 
 <script>
-    let players = ["Player 1", "Player 2", "Player 3", "Player 4"];
+    let players = [];
     let cards = ["サカ", "バン", "バス", "ピス"];
-    let king = Math.floor(Math.random() * 4) + 1; // Randomly select a king
-    let playerChoices = [];
-    let currentPlayer = 0; // Current player index
+    let king = 0;
+    let currentPlayer = 0;
+    let roomID = null;
 
-    function startGame() {
-        document.getElementById("result").innerHTML = "";
-        document.getElementById("cardSelection").style.display = "block";
-        shuffle(cards);
-        currentPlayer = 0;
-        playerChoices = [];
+    function createRoom() {
+        roomID = Math.random().toString(36).substr(2, 6);
+        document.getElementById("roomID").textContent = roomID;
+        document.getElementById("room").style.display = "block";
+        players.push("Player 1");
+    }
 
-        for (let i = 1; i <= 4; i++) {
-            playerChoices.push({ player: players[i - 1], card: null });
+    function joinRoom() {
+        roomID = prompt("Enter the Room ID:");
+        if (roomID) {
+            document.getElementById("roomID").textContent = roomID;
+            document.getElementById("room").style.display = "block";
+            players.push("Player 2");
+            players.push("Player 3");
+            players.push("Player 4");
+            players.push("Player 5");
         }
     }
 
     function chooseCard(card) {
-        if (playerChoices[currentPlayer].card === null) {
-            playerChoices[currentPlayer].card = card;
-            document.getElementsByClassName("card")[cards.indexOf(card)].style.display = "none";
-
-            if (currentPlayer === 3) {
-                // All players have chosen cards, reveal and check the result
-                document.getElementById("cardSelection").style.display = "none";
-                revealCards(playerChoices);
+        if (players.includes(`Player ${currentPlayer + 1}`) && players[currentPlayer] === `Player ${currentPlayer + 1}`) {
+            if (players[currentPlayer] === `Player ${king + 1}`) {
+                alert("You are the KING. You cannot choose a card.");
             } else {
-                currentPlayer++; // Move to the next player
+                if (players[currentPlayer].card === null) {
+                    players[currentPlayer].card = card;
+                    document.getElementsByClassName("card")[cards.indexOf(card)].style.display = "none";
+                } else {
+                    alert("You have already chosen a card.");
+                }
             }
+        } else {
+            alert("It's not your turn to choose a card.");
         }
     }
 
-    function revealCards(playerChoices) {
+    function lockInCard() {
+        if (players.includes(`Player ${currentPlayer + 1}`) && players[currentPlayer] === `Player ${currentPlayer + 1}`) {
+            if (players[currentPlayer].card === null) {
+                alert("You must choose a card before locking in.");
+            } else {
+                currentPlayer++;
+                if (currentPlayer === 4) {
+                    // All players have locked in their cards
+                    document.getElementById("cardSelection").style.display = "none";
+                    revealCards();
+                }
+            }
+        } else {
+            alert("It's not your turn to lock in the card.");
+        }
+    }
+
+    function revealCards() {
         let resultText = "Results:<br>";
 
-        for (let i = 1; i <= 4; i++) {
-            resultText += `<b>${players[i - 1]}:</b> ${playerChoices[i - 1].card}<br>`;
+        for (let i = 0; i < players.length; i++) {
+            resultText += `<b>${players[i]}:</b> ${players[i].card}<br>`;
         }
 
-        if (playerChoices[0].card === "サカ" && playerChoices[1].card === "バン" && playerChoices[2].card === "バス" && playerChoices[3].card === "ピス") {
+        if (players[0].card === "サカ" && players[1].card === "バン" && players[2].card === "バス" && players[3].card === "ピス") {
             resultText += "You WIN!!";
         } else {
             resultText += "You LOST......";
         }
 
         document.getElementById("result").innerHTML = resultText;
-    }
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
     }
 </script>
 </body>
