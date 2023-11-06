@@ -18,6 +18,15 @@
         #room {
             display: none;
         }
+        .player-icon {
+            display: inline-block;
+            margin: 5px;
+        }
+        .king-crown {
+            display: inline-block;
+            font-size: 20px;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -25,6 +34,8 @@
     <h1>Card Game</h1>
     <div id="room">
         <h2>Your Room ID: <span id="roomID"></span></h2>
+        <input type="text" id="displayNameInput" placeholder="Enter Display Name">
+        <button onclick="setDisplayName()">Set Display Name</button>
     </div>
     <button onclick="createRoom()">Create a Room</button>
     <button onclick="joinRoom()">Join a Room</button>
@@ -50,7 +61,7 @@
         roomID = Math.random().toString(36).substr(2, 6);
         document.getElementById("roomID").textContent = roomID;
         document.getElementById("room").style.display = "block";
-        players.push("Player 1");
+        players.push({ name: "", card: null, isKing: false });
     }
 
     function joinRoom() {
@@ -58,16 +69,31 @@
         if (roomID) {
             document.getElementById("roomID").textContent = roomID;
             document.getElementById("room").style.display = "block";
-            players.push("Player 2");
-            players.push("Player 3");
-            players.push("Player 4");
-            players.push("Player 5");
+            players.push({ name: "", card: null, isKing: false });
+            players.push({ name: "", card: null, isKing: false });
+            players.push({ name: "", card: null, isKing: false });
+            players.push({ name: "", card: null, isKing: false });
+        }
+    }
+
+    function setDisplayName() {
+        const displayName = document.getElementById("displayNameInput").value;
+        if (displayName.trim() !== "") {
+            players[currentPlayer].name = displayName;
+            currentPlayer++;
+            if (currentPlayer === 5) {
+                // All players have set their display names
+                document.getElementById("room").style.display = "none";
+                document.getElementById("cardSelection").style.display = "block";
+            }
+        } else {
+            alert("Please enter a valid display name.");
         }
     }
 
     function chooseCard(card) {
-        if (players.includes(`Player ${currentPlayer + 1}`) && players[currentPlayer] === `Player ${currentPlayer + 1}`) {
-            if (players[currentPlayer] === `Player ${king + 1}`) {
+        if (players[currentPlayer].name !== "") {
+            if (players[currentPlayer].isKing) {
                 alert("You are the KING. You cannot choose a card.");
             } else {
                 if (players[currentPlayer].card === null) {
@@ -78,24 +104,24 @@
                 }
             }
         } else {
-            alert("It's not your turn to choose a card.");
+            alert("Set your display name before choosing a card.");
         }
     }
 
     function lockInCard() {
-        if (players.includes(`Player ${currentPlayer + 1}`) && players[currentPlayer] === `Player ${currentPlayer + 1}`) {
+        if (players[currentPlayer].name !== "") {
             if (players[currentPlayer].card === null) {
                 alert("You must choose a card before locking in.");
             } else {
                 currentPlayer++;
-                if (currentPlayer === 4) {
+                if (currentPlayer === 5) {
                     // All players have locked in their cards
                     document.getElementById("cardSelection").style.display = "none";
                     revealCards();
                 }
             }
         } else {
-            alert("It's not your turn to lock in the card.");
+            alert("Set your display name before locking in.");
         }
     }
 
@@ -103,13 +129,16 @@
         let resultText = "Results:<br>";
 
         for (let i = 0; i < players.length; i++) {
-            resultText += `<b>${players[i]}:</b> ${players[i].card}<br>`;
-        }
-
-        if (players[0].card === "サカ" && players[1].card === "バン" && players[2].card === "バス" && players[3].card === "ピス") {
-            resultText += "You WIN!!";
-        } else {
-            resultText += "You LOST......";
+            resultText += `<div class="player-icon">${players[i].name}: ${players[i].card}</div>`;
+            if (players[i].isKing) {
+                resultText += `<div class="king-crown">👑</div>`;
+            }
+            if (players[i].card === "サカ" && players[i].card === "バン" && players[i].card === "バス" && players[i].card === "ピス") {
+                resultText += " - WIN!!";
+            } else {
+                resultText += " - LOST......";
+            }
+            resultText += "<br>";
         }
 
         document.getElementById("result").innerHTML = resultText;
