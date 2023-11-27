@@ -1,148 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Card Game with Rooms</title>
+    <title>Welcome to Beat Shop: BISHOP</title>
     <style>
-        #game {
-            text-align: center;
-        }
-        #result {
-            font-size: 24px;
-        }
-        .card {
-            border: 2px solid black;
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-        }
-        #room {
-            display: none;
-        }
-        .player-icon {
-            display: inline-block;
-            margin: 5px;
-        }
-        .king-crown {
-            display: inline-block;
-            font-size: 20px;
-            margin: 5px;
+        body {
+            background-color: black;
+            color: lime;
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 25px;
         }
     </style>
+    <script src="app.js"></script>
 </head>
 <body>
-<div id="game">
-    <h1>Card Game</h1>
-    <div id="room">
-        <h2>Your Room ID: <span id="roomID"></span></h2>
-        <input type="text" id="displayNameInput" placeholder="Enter Display Name">
-        <button onclick="setDisplayName()">Set Display Name</button>
-    </div>
-    <button onclick="createRoom()">Create a Room</button>
-    <button onclick="joinRoom()">Join a Room</button>
-    <div id="cardSelection">
-        <h2>Select a card:</h2>
-        <div class="card" onclick="chooseCard('サカ')">サカ</div>
-        <div class="card" onclick="chooseCard('バン')">バン</div>
-        <div class="card" onclick="chooseCard('バス')">バス</div>
-        <div class="card" onclick="chooseCard('ピス')">ピス</div>
-        <button onclick="lockInCard()">決定</button>
-    </div>
-    <div id="result"></div>
-</div>
+    <pre id="novel-text"></pre>
 
-<script>
-    let players = [];
-    let cards = ["サカ", "バン", "バス", "ピス"];
-    let king = 0;
-    let currentPlayer = 0;
-    let roomID = null;
+    <script>
+        const novelText = document.getElementById("novel-text");
+        let novelLines = [];
+        let currentLine = 0;
+        let currentChar = 0;
+        let interval;
 
-    function createRoom() {
-        roomID = Math.random().toString(36).substr(2, 6);
-        document.getElementById("roomID").textContent = roomID;
-        document.getElementById("room").style.display = "block";
-        players.push({ name: "", card: null, isKing: false });
-    }
-
-    function joinRoom() {
-        roomID = prompt("Enter the Room ID:");
-        if (roomID) {
-            document.getElementById("roomID").textContent = roomID;
-            document.getElementById("room").style.display = "block";
-            players.push({ name: "", card: null, isKing: false });
-            players.push({ name: "", card: null, isKing: false });
-            players.push({ name: "", card: null, isKing: false });
-            players.push({ name: "", card: null, isKing: false });
-        }
-    }
-
-    function setDisplayName() {
-        const displayName = document.getElementById("displayNameInput").value;
-        if (displayName.trim() !== "") {
-            players[currentPlayer].name = displayName;
-            currentPlayer++;
-            if (currentPlayer === 5) {
-                // All players have set their display names
-                document.getElementById("room").style.display = "none";
-                document.getElementById("cardSelection").style.display = "block";
-            }
-        } else {
-            alert("Please enter a valid display name.");
-        }
-    }
-
-    function chooseCard(card) {
-        if (players[currentPlayer].name !== "") {
-            if (players[currentPlayer].isKing) {
-                alert("You are the KING. You cannot choose a card.");
-            } else {
-                if (players[currentPlayer].card === null) {
-                    players[currentPlayer].card = card;
-                    document.getElementsByClassName("card")[cards.indexOf(card)].style.display = "none";
-                } else {
-                    alert("You have already chosen a card.");
-                }
-            }
-        } else {
-            alert("Set your display name before choosing a card.");
-        }
-    }
-
-    function lockInCard() {
-        if (players[currentPlayer].name !== "") {
-            if (players[currentPlayer].card === null) {
-                alert("You must choose a card before locking in.");
-            } else {
-                currentPlayer++;
-                if (currentPlayer === 5) {
-                    // All players have locked in their cards
-                    document.getElementById("cardSelection").style.display = "none";
-                    revealCards();
-                }
-            }
-        } else {
-            alert("Set your display name before locking in.");
-        }
-    }
-
-    function revealCards() {
-        let resultText = "Results:<br>";
-
-        for (let i = 0; i < players.length; i++) {
-            resultText += `<div class="player-icon">${players[i].name}: ${players[i].card}</div>`;
-            if (players[i].isKing) {
-                resultText += `<div class="king-crown">👑</div>`;
-            }
-            if (players[i].card === "サカ" && players[i].card === "バン" && players[i].card === "バス" && players[i].card === "ピス") {
-                resultText += " - WIN!!";
-            } else {
-                resultText += " - LOST......";
-            }
-            resultText += "<br>";
-        }
-
-        document.getElementById("result").innerHTML = resultText;
-    }
-</script>
+        // Load the novel content from sentences.txt using a Fetch API.
+        fetch('sentences.txt')
+            .then(response => response.text())
+            .then(text => {
+                novelLines = text.split('\n');
+                displayNextChar();        
+         
+    </script>    
 </body>
 </html>
