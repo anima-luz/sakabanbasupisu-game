@@ -53,6 +53,26 @@
             }
         }
 
+        // Function to display the content of endroll.txt.
+        function displayEndroll() {
+            fetch('endroll.txt')
+                .then(response => response.text())
+                .then(text => {
+                    const endrollLines = text.split('\n');
+                    let lineIndex = 0;
+
+                    function displayNextLine() {
+                        if (lineIndex < endrollLines.length) {
+                            novelText.textContent += endrollLines[lineIndex] + '\n';
+                            lineIndex++;
+                            setTimeout(displayNextLine, 10);
+                        }
+                    }
+
+                    displayNextLine();
+                });
+            }        
+
         // Function to clear the content and make the page black.
         function clearContent() {
             novelText.textContent = '';
