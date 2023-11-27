@@ -1,3 +1,9 @@
+const novelText = document.getElementById("novel-text");
+let novelLines = [];
+let currentLine = 0;
+let currentChar = 0;
+let interval;
+
 function displayNextChar() {
     if (currentLine < novelLines.length) {
         const line = novelLines[currentLine];
@@ -16,9 +22,28 @@ function displayNextChar() {
         }
     } else {
         // Display Endroll.
-        document.addEventListener("click", clearContent);
-        document.addEventListener("keydown", clearContent);
+        // document.addEventListener("click", clearContent);
+        // document.addEventListener("keydown", clearContent);
         // displayEndroll();
         return;
     }
 }
+
+function displayEndroll() {
+    fetch('endroll.txt')
+        .then(response => response.text())
+        .then(text => {
+            const endrollLines = text.split('\n');
+            let lineIndex = 0;
+
+            function displayNextLine() {
+                if (lineIndex < endrollLines.length) {
+                    novelText.textContent += endrollLines[lineIndex] + '\n';
+                    lineIndex++;
+                    setTimeout(displayNextLine, 10);
+                }
+            }
+
+            displayNextLine();
+        });
+    }

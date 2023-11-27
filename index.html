@@ -16,12 +16,6 @@
     <pre id="novel-text"></pre>
 
     <script>
-        const novelText = document.getElementById("novel-text");
-        let novelLines = [];
-        let currentLine = 0;
-        let currentChar = 0;
-        let interval;
-
         // Load the novel content from sentences.txt using a Fetch API.
         fetch('sentences.txt')
             .then(response => response.text())
