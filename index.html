@@ -10,19 +10,60 @@
             font-size: 25px;
         }
     </style>
-    <script src="app.js"></script>
 </head>
 <body>
     <pre id="novel-text"></pre>
 
     <script>
+        const novelText = document.getElementById("novel-text");
+        let novelLines = [];
+        let currentLine = 0;
+        let currentChar = 0;
+        let interval;
+
         // Load the novel content from sentences.txt using a Fetch API.
         fetch('sentences.txt')
             .then(response => response.text())
             .then(text => {
                 novelLines = text.split('\n');
-                displayNextChar();        
-         
-    </script>    
+                displayNextChar();
+            });
+
+        // Function to display the next character of the novel with a delay.
+        function displayNextChar() {
+            if (currentLine < novelLines.length) {
+                const line = novelLines[currentLine];
+                if (currentChar < line.length) {
+                    novelText.textContent += line.charAt(currentChar);
+                    currentChar++;
+                    interval = setTimeout(displayNextChar, 10);
+                } else {
+                    // Line complete; wait for user interaction.
+                    clearInterval(interval);
+                    currentLine++;
+                    currentChar = 0;
+                    novelText.textContent += '\n'; // Add a new line for the next text.
+                    document.addEventListener("click", displayNextChar);
+                    document.addEventListener("keydown", displayNextChar);
+                }
+            } else {
+                // Clear the content and make the page black when the user interacts.
+                document.addEventListener("click", clearContent);
+                document.addEventListener("keydown", clearContent);
+            }
+        }
+
+        // Function to clear the content and make the page black.
+        function clearContent() {
+            novelText.textContent = '';
+            document.body.style.backgroundColor = 'black';
+            //currentLine = 0;
+            //currentChar = 0;
+            document.removeEventListener("click", clearContent);
+            document.removeEventListener("keydown", clearContent);
+            alert('!!! CONNECTION CLOSED !!!')
+            //displayNextChar();
+        }
+    </script>
 </body>
 </html>
