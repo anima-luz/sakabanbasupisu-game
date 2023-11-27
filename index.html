@@ -20,6 +20,7 @@
         let currentLine = 0;
         let currentChar = 0;
         let interval;
+        let displayEnabled = true;
 
         // Load the novel content from sentences.txt using a Fetch API.
         fetch('sentences.txt')
@@ -31,6 +32,9 @@
 
         // Function to display the next character of the novel with a delay.
         function displayNextChar() {
+            if (!displayEnable) {
+                return;
+            }
             if (currentLine < novelLines.length) {
                 const line = novelLines[currentLine];
                 if (currentChar < line.length) {
@@ -81,6 +85,7 @@
             document.body.style.backgroundColor = 'black';
             //currentLine = 0;
             //currentChar = 0;
+            displayEnabled = false;
             document.removeEventListener("click", clearContent);
             document.removeEventListener("keydown", clearContent);
             alert('!!! CONNECTION CLOSED !!!')
