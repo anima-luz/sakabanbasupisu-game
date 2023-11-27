@@ -48,8 +48,8 @@
                 }
             } else {
                 // Clear the content and make the page black when the user interacts.
-                document.addEventListener("click", clearContent);
-                document.addEventListener("keydown", clearContent);
+                document.addEventListener("click", displayEndroll);
+                document.addEventListener("keydown", displayEndroll);
             }
         }
 
@@ -66,6 +66,8 @@
                             novelText.textContent += endrollLines[lineIndex] + '\n';
                             lineIndex++;
                             setTimeout(displayNextLine, 10);
+                        } else {
+                            clearContent();
                         }
                     }
 
